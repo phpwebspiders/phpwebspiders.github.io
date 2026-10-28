@@ -379,89 +379,68 @@ ul { list-style: none; }
 }
 
 /* ═══════════════════════════════════════════
-   PORTFOLIO
+   SOLUTIONS
    ═══════════════════════════════════════════ */
-.portfolio-grid { display: grid; gap: 32px; }
-.project-card {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.solution-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: var(--transition);
+  display: flex;
+  flex-direction: column;
 }
-.project-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
-.project-card:nth-child(even) { direction: rtl; }
-.project-card:nth-child(even) > * { direction: ltr; }
-
-.project-image {
-  display: flex; align-items: center; justify-content: center;
-  padding: 40px; min-height: 300px;
-}
-.project-mockup {
-  background: rgba(0,0,0,.3);
-  border-radius: 10px;
-  width: 100%; max-width: 320px;
-  padding: 0;
+.solution-card:hover {
+  transform: translateY(-4px);
   box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  overflow: hidden;
 }
-.mockup-bar {
-  display: flex; gap: 6px; padding: 10px 14px;
-  background: rgba(0,0,0,.3);
+.solution-icon-area {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; min-height: 160px;
 }
-.mockup-bar span {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: rgba(255,255,255,.15);
+.solution-emoji {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,.3));
 }
-.mockup-bar span:first-child { background: #ff5f57; }
-.mockup-bar span:nth-child(2) { background: #ffbd2e; }
-.mockup-bar span:nth-child(3) { background: #28ca42; }
-.mockup-content { padding: 20px; }
-.mockup-line {
-  height: 10px; border-radius: 5px;
-  background: rgba(255,255,255,.1);
-  margin-bottom: 10px;
+.solution-body {
+  padding: 32px 32px 36px;
+  display: flex; flex-direction: column; flex: 1;
 }
-.mockup-line.w80 { width: 80%; }
-.mockup-line.w60 { width: 60%; }
-.mockup-line.w40 { width: 40%; }
-.mockup-blocks { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px,1fr)); gap: 10px; margin-top: 16px; }
-.mockup-block {
-  height: 50px; border-radius: 6px;
-  background: rgba(255,255,255,.07);
+.solution-body h3 {
+  font-size: 1.4rem; font-weight: 700; margin-bottom: 10px;
 }
-.mockup-block.tall { height: 80px; }
-
-.project-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
-.project-tags { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.project-tags span {
+.solution-body > p {
+  color: var(--text-dim); font-size: .95rem; margin-bottom: 20px; line-height: 1.6;
+}
+.solution-features {
+  list-style: none; padding: 0; margin: 0 0 20px;
+  display: flex; flex-direction: column; gap: 10px; flex: 1;
+}
+.solution-features li {
+  font-size: .9rem; color: var(--text-dim);
+  padding-left: 24px;
+  position: relative;
+}
+.solution-features li::before {
+  content: '✓';
+  position: absolute; left: 0;
+  color: #818cf8; font-weight: 700;
+}
+.solution-tags {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto;
+}
+.solution-tags span {
   padding: 4px 12px; border-radius: 50px;
   font-size: .75rem; font-weight: 500;
   background: rgba(129,140,248,.08);
   color: var(--accent);
   border: 1px solid rgba(129,140,248,.15);
 }
-.project-info h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
-.project-info > p { color: var(--text-dim); font-size: .95rem; margin-bottom: 20px; }
-.project-results {
-  display: flex; gap: 24px; margin-bottom: 20px;
-}
-.project-results div {
-  font-size: .9rem; color: var(--text-dim);
-}
-.project-results strong {
-  display: block; font-size: 1.4rem; font-weight: 800;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.project-link {
-  font-weight: 600; color: var(--accent);
-  transition: var(--transition);
-}
-.project-link:hover { color: #c084fc; }
 
 /* ═══════════════════════════════════════════
    SKILLS MARQUEE
@@ -675,8 +654,7 @@ footer {
 @media (max-width: 1024px) {
   .about-grid { grid-template-columns: 1fr; gap: 48px; }
   .about-image { order: -1; }
-  .project-card { grid-template-columns: 1fr; }
-  .project-card:nth-child(even) { direction: ltr; }
+  .solutions-grid { grid-template-columns: 1fr; }
   .process-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-grid { grid-template-columns: 1fr; }
 }
@@ -704,5 +682,6 @@ footer {
   .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
 
   .cta-box { padding: 48px 24px; }
+  .solutions-grid { grid-template-columns: 1fr; }
 }
 
