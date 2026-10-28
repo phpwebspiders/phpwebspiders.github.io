@@ -91,6 +91,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // ─── Honeypot spam protection ───
+    const honeypot = form.querySelector('#website_url');
+    if (honeypot && honeypot.value.trim() !== '') {
+      // Bot detected: fake success silently without submitting to Google Forms
+      const btn = form.querySelector('button[type="submit"]');
+      const original = btn.innerHTML;
+      btn.innerHTML = '✓ Message Sent!';
+      btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+      form.reset();
+
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = '';
+      }, 4000);
+      return;
+    }
+
     const btn = form.querySelector('button[type="submit"]');
     const original = btn.innerHTML;
 
@@ -99,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const formData = new FormData(form);
+      formData.delete('website_url');
+
       await fetch(GOOGLE_FORM_ACTION, {
         method: 'POST',
         mode: 'no-cors',

@@ -583,6 +583,14 @@ ul { list-style: none; }
 }
 
 /* Form */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 .contact-form {
   display: grid; gap: 20px;
   background: var(--bg-card);

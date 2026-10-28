@@ -499,12 +499,17 @@
           </div>
         </div>
         <form class="contact-form reveal" id="contactForm">
+          <!-- Honeypot anti-spam field (hidden from humans, traps bots) -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="website_url">Leave this field blank</label>
+            <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off" />
+          </div>
           <div class="form-group">
-            <input type="text" id="name" name="entry.2074027321" placeholder=" " required />
+            <input type="text" id="name" name="entry.2074027321" placeholder=" " autocomplete="off" required />
             <label for="name">Your Name</label>
           </div>
           <div class="form-group">
-            <input type="email" id="email" name="entry.30262473" placeholder=" " required />
+            <input type="email" id="email" name="entry.30262473" placeholder=" " autocomplete="off" required />
             <label for="email">Your Email</label>
           </div>
           <div class="form-group">
