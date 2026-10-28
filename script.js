@@ -85,22 +85,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ─── Contact form (demo) ───
+  // ─── Contact form (Google Forms submission) ───
   const form = document.getElementById('contactForm');
-  form.addEventListener('submit', (e) => {
+  const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSedePCBZOxSJnRIkhFCx82kqJEN0-ZYbwUsWkTtXxeCWXI3_w/formResponse';
+
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
     const original = btn.innerHTML;
-    btn.innerHTML = '✓ Message Sent!';
-    btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+
+    btn.innerHTML = 'Sending...';
     btn.disabled = true;
 
-    setTimeout(() => {
-      btn.innerHTML = original;
-      btn.style.background = '';
-      btn.disabled = false;
+    try {
+      const formData = new FormData(form);
+      await fetch(GOOGLE_FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData,
+      });
+
+      btn.innerHTML = '✓ Message Sent!';
+      btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
       form.reset();
-    }, 3000);
+
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 4000);
+    } catch (err) {
+      console.error('Submission error:', err);
+      btn.innerHTML = '✕ Error! Try again';
+      btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 4000);
+    }
   });
 
   // ─── Subtle parallax on hero glows ───
