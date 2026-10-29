@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHPWebSpiders — Google Business Profile Assets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #090a10;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 45px; }
+    h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+    .gradient-text {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.lead { color: #94a3b8; font-size: 1.05rem; max-width: 680px; margin: 0 auto; }
+    
+    .card {
+      background: #12131f;
+      border: 1px solid rgba(129, 140, 248, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .card-title h2 { font-size: 1.35rem; font-weight: 700; }
+    .card-title span { font-size: 0.85rem; color: #818cf8; font-family: 'JetBrains Mono', monospace; }
+
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      color: #06070c;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: rgba(129, 140, 248, 0.15);
+      color: #c7d2fe;
+      border: 1px solid rgba(129, 140, 248, 0.35);
+    }
+    .btn-secondary:hover {
+      background: rgba(129, 140, 248, 0.25);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.06);
+      color: #f1f5f9;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.12); }
+
+    .preview-box {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #050508;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-box svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 30px;
+    }
+    @media (max-width: 900px) {
+      .mockup-grid { grid-template-columns: 1fr; }
+    }
+    .mockup-card {
+      background: #10121d;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+    }
+    .circle-avatar {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 16px;
+      border: 3px solid #818cf8;
+      box-shadow: 0 0 35px rgba(129, 140, 248, 0.35);
+      background: #06070c;
+    }
+    .circle-avatar svg { width: 100%; height: 100%; object-fit: cover; }
+    
+    .status-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      margin-bottom: 12px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1e1b4b;
+      color: #ffffff;
+      padding: 14px 22px;
+      border-radius: 10px;
+      border: 1px solid #818cf8;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="status-pill">✦ GOOGLE BUSINESS PROFILE ASSETS</span>
+      <h1><span class="gradient-text">PHPWebSpiders</span> Branding Kit</h1>
+      <p class="lead">High-resolution logo &amp; cover photo crafted for Google Business Profile specifications.</p>
+    </header>
+
+    <!-- SECTION 1: LOGO (1:1 SQUARE) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <h2>Profile Picture / Logo</h2>
+          <span>Square 1:1 • 1024 × 1024 px (SVG + PNG)</span>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="exportSvgToPng('logo-svg-main', 'google-business-logo-1024.png', 1024, 1024, this)">
+            ⬇ Download High-Res PNG (1024px)
+          </button>
+          <button class="btn btn-secondary" onclick="exportSvgToPng('logo-svg-main', 'google-business-logo-2048.png', 2048, 2048, this)">
+            ⚡ Export Ultra-HD (2048px)
+          </button>
+          <a href="google-business-logo.svg" download="google-business-logo.svg" class="btn btn-outline">⬇ Download SVG</a>
+        </div>
+      </div>
+      <div class="preview-box" id="logo-container" style="max-width: 520px; margin: 0 auto;">
+        <!-- Inlined Vector Logo -->
+        <svg id="logo-svg-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+          <defs>
+            <radialGradient id="bg-glow" cx="50%" cy="45%" r="65%">
+              <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8"/>
+              <stop offset="40%" stop-color="#0f172a" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#05050a" stop-opacity="1"/>
+            </radialGradient>
+            <radialGradient id="core-glow" cx="50%" cy="42%" r="35%">
+              <stop offset="0%" stop-color="#6366f1" stop-opacity="0.45"/>
+              <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#0a0a14" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="45%" stop-color="#818cf8"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </linearGradient>
+            <linearGradient id="neon-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#22d3ee"/>
+              <stop offset="100%" stop-color="#3b82f6"/>
+            </linearGradient>
+            <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="8" result="blur1"/>
+              <feMerge>
+                <feMergeNode in="blur1"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(99, 102, 241, 0.07)" stroke-width="1"/>
+            </pattern>
+          </defs>
+
+          <rect width="1024" height="1024" fill="#06070c"/>
+          <rect width="1024" height="1024" fill="url(#bg-glow)"/>
+          <rect width="1024" height="1024" fill="url(#grid-pattern)"/>
+          <circle cx="512" cy="430" r="380" fill="url(#core-glow)"/>
+
+          <circle cx="512" cy="430" r="300" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="1.5" stroke-dasharray="8 12"/>
+          <circle cx="512" cy="430" r="320" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="1"/>
+
+          <!-- Hexagonal Frame -->
+          <polygon points="512,160 740,292 740,555 512,687 284,555 284,292"
+                   fill="rgba(15, 23, 42, 0.6)" stroke="url(#brand-grad)" stroke-width="3" filter="url(#soft-glow)"/>
+
+          <!-- Radar Rings -->
+          <polygon points="512,230 680,327 680,521 512,618 344,521 344,327"
+                   fill="rgba(99, 102, 241, 0.05)" stroke="rgba(129, 140, 248, 0.3)" stroke-width="1.5"/>
+
+          <polygon points="512,290 625,355 625,485 512,550 399,485 399,355"
+                   fill="rgba(56, 189, 248, 0.06)" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5"/>
+
+          <polygon points="512,350 575,386 575,459 512,495 449,459 449,386"
+                   fill="rgba(192, 132, 252, 0.1)" stroke="url(#brand-grad)" stroke-width="2"/>
+
+          <!-- Radial Strands -->
+          <g stroke="rgba(129, 140, 248, 0.45)" stroke-width="2">
+            <line x1="512" y1="160" x2="512" y2="687"/>
+            <line x1="740" y1="292" x2="284" y2="555"/>
+            <line x1="740" y1="555" x2="284" y2="292"/>
+            <line x1="284" y1="423" x2="740" y2="423" stroke="rgba(56, 189, 248, 0.25)" stroke-dasharray="4 6"/>
+          </g>
+
+          <!-- Glowing Nodes -->
+          <g filter="url(#neon-glow)">
+            <circle cx="512" cy="160" r="6" fill="#38bdf8"/>
+            <circle cx="740" cy="292" r="6" fill="#818cf8"/>
+            <circle cx="740" cy="555" r="6" fill="#c084fc"/>
+            <circle cx="512" cy="687" r="6" fill="#38bdf8"/>
+            <circle cx="284" cy="555" r="6" fill="#818cf8"/>
+            <circle cx="284" cy="292" r="6" fill="#c084fc"/>
+
+            <circle cx="512" cy="230" r="4.5" fill="#ffffff"/>
+            <circle cx="680" cy="327" r="4.5" fill="#38bdf8"/>
+            <circle cx="680" cy="521" r="4.5" fill="#818cf8"/>
+            <circle cx="512" cy="618" r="4.5" fill="#ffffff"/>
+            <circle cx="344" cy="521" r="4.5" fill="#c084fc"/>
+            <circle cx="344" cy="327" r="4.5" fill="#38bdf8"/>
+          </g>
+
+          <!-- Center Core -->
+          <polygon points="512,385 550,407 550,451 512,473 474,451 474,407"
+                   fill="url(#brand-grad)" filter="url(#neon-glow)"/>
+
+          <!-- Spider Circuit Legs -->
+          <g stroke="url(#brand-grad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#soft-glow)">
+            <path d="M 480 395 L 430 330 L 400 320"/>
+            <path d="M 544 395 L 594 330 L 624 320"/>
+            <path d="M 474 415 L 390 390 L 350 410"/>
+            <path d="M 550 415 L 634 390 L 674 410"/>
+            <path d="M 474 445 L 390 470 L 350 450"/>
+            <path d="M 550 445 L 634 470 L 674 450"/>
+            <path d="M 480 465 L 430 530 L 400 540"/>
+            <path d="M 544 465 L 594 530 L 624 540"/>
+          </g>
+
+          <!-- Code Brackets -->
+          <g stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M 495 418 L 485 429 L 495 440"/>
+            <path d="M 529 418 L 539 429 L 529 440"/>
+            <line x1="517" y1="416" x2="507" y2="442"/>
+          </g>
+
+          <!-- PHP Badge -->
+          <g transform="translate(512, 130)">
+            <rect x="-42" y="-14" width="84" height="28" rx="14" fill="#0f172a" stroke="url(#neon-cyan-grad)" stroke-width="1.5" filter="url(#soft-glow)"/>
+            <text x="0" y="5" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="12" fill="#38bdf8" letter-spacing="2">PHP</text>
+          </g>
+
+          <!-- Main Brand Typography -->
+          <text x="512" y="785" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="800" font-size="62" letter-spacing="-0.5" filter="url(#soft-glow)">
+            <tspan fill="#ffffff">PHP</tspan><tspan fill="url(#brand-grad)">WebSpiders</tspan>
+          </text>
+
+          <!-- Accent Line -->
+          <g filter="url(#soft-glow)">
+            <line x1="330" y1="825" x2="480" y2="825" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="512,820 517,825 512,830 507,825" fill="#38bdf8"/>
+            <line x1="544" y1="825" x2="694" y2="825" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round"/>
+          </g>
+
+          <!-- Subtitle -->
+          <text x="512" y="865" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="600" font-size="16" fill="#94a3b8" letter-spacing="6">
+            FULL-STACK WEB SOLUTIONS
+          </text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SECTION 2: COVER PHOTO (16:9 LANDSCAPE) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <h2>Google Business Profile Cover Photo</h2>
+          <span>Landscape 16:9 • 1200 × 675 px (SVG + PNG)</span>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="exportSvgToPng('cover-svg-main', 'google-business-cover-1200.png', 1200, 675, this)">
+            ⬇ Download High-Res PNG (1200px)
+          </button>
+          <button class="btn btn-secondary" onclick="exportSvgToPng('cover-svg-main', 'google-business-cover-2400.png', 2400, 1350, this)">
+            ⚡ Export Ultra-HD (2400px)
+          </button>
+          <a href="google-business-cover.svg" download="google-business-cover.svg" class="btn btn-outline">⬇ Download SVG</a>
+        </div>
+      </div>
+      <div class="preview-box" id="cover-container">
+        <!-- Inlined Vector Cover -->
+        <svg id="cover-svg-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+          <defs>
+            <radialGradient id="cov-glow-left" cx="25%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#312e81" stop-opacity="0.6"/>
+              <stop offset="50%" stop-color="#1e1b4b" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#07070d" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="cov-glow-right" cx="80%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.3"/>
+              <stop offset="60%" stop-color="#0f172a" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="#07070d" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="cov-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="50%" stop-color="#818cf8"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </linearGradient>
+            <filter id="cov-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <pattern id="cov-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(99, 102, 241, 0.05)" stroke-width="1"/>
+              <circle cx="48" cy="48" r="1.5" fill="rgba(99, 102, 241, 0.15)"/>
+            </pattern>
+          </defs>
+
+          <!-- Background -->
+          <rect width="1200" height="675" fill="#07080e"/>
+          <rect width="1200" height="675" fill="url(#cov-grid)"/>
+          <rect width="1200" height="675" fill="url(#cov-glow-left)"/>
+          <rect width="1200" height="675" fill="url(#cov-glow-right)"/>
+
+          <!-- Left Spider Matrix -->
+          <g transform="translate(190, 335)">
+            <circle cx="0" cy="0" r="180" fill="url(#cov-brand-grad)" opacity="0.12" filter="url(#cov-glow)"/>
+            <polygon points="0,-160 138,-80 138,80 0,160 -138,80 -138,-80" fill="none" stroke="rgba(99, 102, 241, 0.25)" stroke-width="1.5"/>
+            <polygon points="0,-115 100,-57 100,57 0,115 -100,57 -100,-57" fill="rgba(30, 27, 75, 0.3)" stroke="rgba(56, 189, 248, 0.4)" stroke-width="1.5"/>
+            <polygon points="0,-70 60,-35 60,35 0,70 -60,35 -60,-35" fill="rgba(99, 102, 241, 0.2)" stroke="url(#cov-brand-grad)" stroke-width="2"/>
+
+            <line x1="0" y1="-160" x2="0" y2="160" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5"/>
+            <line x1="138" y1="-80" x2="-138" y2="80" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5"/>
+            <line x1="138" y1="80" x2="-138" y2="-80" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5"/>
+
+            <g stroke="url(#cov-brand-grad)" stroke-width="2.5" stroke-linecap="round" fill="none">
+              <path d="M -20 -20 L -60 -50 L -90 -45"/>
+              <path d="M 20 -20 L 60 -50 L 90 -45"/>
+              <path d="M -25 0 L -75 0 L -105 15"/>
+              <path d="M 25 0 L 75 0 L 105 15"/>
+              <path d="M -20 20 L -60 50 L -90 45"/>
+              <path d="M 20 20 L 60 50 L 90 45"/>
+            </g>
+
+            <circle cx="0" cy="0" r="26" fill="#0f172a" stroke="url(#cov-brand-grad)" stroke-width="2.5" filter="url(#cov-glow)"/>
+            <g stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M -8 -6 L -14 0 L -8 6"/>
+              <path d="M 8 -6 L 14 0 L 8 6"/>
+              <line x1="3" y1="-7" x2="-3" y2="7"/>
+            </g>
+
+            <g filter="url(#cov-glow)">
+              <circle cx="0" cy="-160" r="5" fill="#38bdf8"/>
+              <circle cx="138" cy="-80" r="5" fill="#818cf8"/>
+              <circle cx="138" cy="80" r="5" fill="#c084fc"/>
+              <circle cx="0" cy="160" r="5" fill="#38bdf8"/>
+              <circle cx="-138" cy="80" r="5" fill="#818cf8"/>
+              <circle cx="-138" cy="-80" r="5" fill="#c084fc"/>
+            </g>
+          </g>
+
+          <!-- Right Content -->
+          <g transform="translate(420, 160)">
+            <g transform="translate(0, 30)">
+              <rect x="0" y="0" width="235" height="32" rx="16" fill="rgba(99, 102, 241, 0.12)" stroke="rgba(99, 102, 241, 0.3)" stroke-width="1.2"/>
+              <circle cx="18" cy="16" r="4.5" fill="#22c55e"/>
+              <text x="32" y="21" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c7d2fe" font-weight="600" letter-spacing="1">AVAILABLE FOR PROJECTS</text>
+            </g>
+
+            <text x="0" y="115" font-family="'Inter', sans-serif" font-weight="800" font-size="64" letter-spacing="-0.5">
+              <tspan fill="#ffffff">PHP</tspan><tspan fill="url(#cov-brand-grad)">WebSpiders</tspan>
+            </text>
+
+            <text x="0" y="160" font-family="'Inter', sans-serif" font-size="22" fill="#94a3b8" font-weight="500">
+              Full-Stack Web Development &amp; Scalable Cloud Architectures
+            </text>
+
+            <text x="0" y="195" font-family="'Inter', sans-serif" font-size="16" fill="#64748b" font-weight="400">
+              Turning complex engineering challenges into blazing-fast digital products that drive growth.
+            </text>
+
+            <g transform="translate(0, 245)" font-family="'JetBrains Mono', monospace" font-size="12.5">
+              <g transform="translate(0, 0)">
+                <rect x="0" y="0" width="160" height="38" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1"/>
+                <text x="20" y="24" fill="#38bdf8">⚡ React / Next.js</text>
+              </g>
+              <g transform="translate(172, 0)">
+                <rect x="0" y="0" width="180" height="38" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(129, 140, 248, 0.3)" stroke-width="1"/>
+                <text x="20" y="24" fill="#818cf8">⚙ Python / Node / PHP</text>
+              </g>
+              <g transform="translate(364, 0)">
+                <rect x="0" y="0" width="165" height="38" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(192, 132, 252, 0.3)" stroke-width="1"/>
+                <text x="20" y="24" fill="#c084fc">☁ Cloud &amp; Microservices</text>
+              </g>
+              <g transform="translate(541, 0)">
+                <rect x="0" y="0" width="160" height="38" rx="8" fill="rgba(15, 23, 42, 0.8)" stroke="rgba(52, 211, 153, 0.3)" stroke-width="1"/>
+                <text x="20" y="24" fill="#34d399">📱 React Native / iOS</text>
+              </g>
+            </g>
+
+            <g transform="translate(0, 325)">
+              <g transform="translate(0, 0)">
+                <text x="0" y="22" font-family="'Inter', sans-serif" font-weight="800" font-size="28" fill="#ffffff">8+</text>
+                <text x="45" y="20" font-family="'Inter', sans-serif" font-size="13" fill="#94a3b8">Years Experience</text>
+              </g>
+              <line x1="180" y1="5" x2="180" y2="28" stroke="rgba(255,255,255,0.15)"/>
+              <g transform="translate(205, 0)">
+                <text x="0" y="22" font-family="'Inter', sans-serif" font-weight="800" font-size="28" fill="#ffffff">50+</text>
+                <text x="60" y="20" font-family="'Inter', sans-serif" font-size="13" fill="#94a3b8">Projects Delivered</text>
+              </g>
+              <line x1="410" y1="5" x2="410" y2="28" stroke="rgba(255,255,255,0.15)"/>
+              <g transform="translate(435, 0)">
+                <text x="0" y="22" font-family="'Inter', sans-serif" font-weight="800" font-size="28" fill="#ffffff">100%</text>
+                <text x="75" y="20" font-family="'Inter', sans-serif" font-size="13" fill="#94a3b8">Client Satisfaction</text>
+              </g>
+            </g>
+          </g>
+
+          <rect x="0" y="670" width="1200" height="5" fill="url(#cov-brand-grad)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- SECTION 3: GOOGLE MOCKUP SIMULATION -->
+    <div class="mockup-grid">
+      <div class="mockup-card">
+        <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #94a3b8;">Circular Avatar Preview (Google Search &amp; Maps)</h3>
+        <div class="circle-avatar">
+          <svg viewBox="0 0 1024 1024" width="100%" height="100%">
+            <use href="#logo-svg-main" />
+          </svg>
+        </div>
+        <h4 style="font-weight: 700; font-size: 1.2rem;">PHPWebSpiders</h4>
+        <p style="color: #64748b; font-size: 0.9rem; margin-top: 4px;">Software company • Noida, UP</p>
+      </div>
+
+      <div class="mockup-card">
+        <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #94a3b8;">Google Business Profile Specs Checklist</h3>
+        <ul style="text-align: left; list-style: none; font-size: 0.9rem; line-height: 2; padding: 10px 20px; color: #cbd5e1;">
+          <li>✓ <strong>Format:</strong> PNG &amp; SVG (Google accepts PNG &amp; JPG)</li>
+          <li>✓ <strong>Logo Aspect:</strong> 1:1 Square (1024×1024 &gt; min 250×250)</li>
+          <li>✓ <strong>Cover Aspect:</strong> 16:9 Landscape (1200×675 &gt; min 480×270)</li>
+          <li>✓ <strong>Safe Area:</strong> Critical text centered to avoid mobile crop</li>
+          <li>✓ <strong>Color Harmony:</strong> Matches your website dark neon theme</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">✓ PNG Downloaded Successfully!</div>
+
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg || '✓ PNG Downloaded Successfully!';
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function exportSvgToPng(svgId, filename, width, height, btnEl) {
+      const originalText = btnEl ? btnEl.textContent : '';
+      if (btnEl) btnEl.textContent = '⏳ Rendering...';
+
+      try {
+        const svgEl = document.getElementById(svgId);
+        if (!svgEl) {
+          throw new Error('SVG element not found: ' + svgId);
+        }
+
+        // Serialize SVG with exact attributes and XML namespaces
+        const serializer = new XMLSerializer();
+        let svgStr = serializer.serializeToString(svgEl);
+
+        // Ensure proper xmlns attributes are present
+        if (!svgStr.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+          svgStr = svgStr.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+
+        // Create clean SVG data URI (works on file:// and http:// without CORS or taint)
+        const svgBase64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        img.onload = function() {
+          try {
+            ctx.drawImage(img, 0, 0, width, height);
+
+            if (canvas.toBlob) {
+              canvas.toBlob(function(blob) {
+                if (blob) {
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.download = filename;
+                  a.href = url;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  setTimeout(() => URL.revokeObjectURL(url), 2000);
+                  showToast('✓ ' + filename + ' downloaded!');
+                } else {
+                  downloadViaDataUrl();
+                }
+              }, 'image/png');
+            } else {
+              downloadViaDataUrl();
+            }
+
+            function downloadViaDataUrl() {
+              const dataUrl = canvas.toDataURL('image/png');
+              const a = document.createElement('a');
+              a.download = filename;
+              a.href = dataUrl;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              showToast('✓ ' + filename + ' downloaded!');
+            }
+          } catch (canvasErr) {
+            console.warn('Canvas export tainted or blocked:', canvasErr);
+            triggerDirectDownload(filename);
+          } finally {
+            if (btnEl) btnEl.textContent = originalText;
+          }
+        };
+
+        img.onerror = function(err) {
+          console.error('Image rasterization error:', err);
+          triggerDirectDownload(filename);
+          if (btnEl) btnEl.textContent = originalText;
+        };
+
+        img.src = svgBase64;
+
+      } catch (err) {
+        console.error('Export exception:', err);
+        triggerDirectDownload(filename);
+        if (btnEl) btnEl.textContent = originalText;
+      }
+    }
+
+    function triggerDirectDownload(filename) {
+      // Fallback: download existing file directly
+      const fallbackFile = filename.includes('logo') ? 'google-business-logo.png' : 'google-business-cover.png';
+      const a = document.createElement('a');
+      a.download = fallbackFile;
+      a.href = fallbackFile;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('✓ Downloading ' + fallbackFile);
+    }
+  </script>
+</body>
+</html>
